@@ -127,7 +127,7 @@ def sign_language_recognition_on_image(image):
 
 st.title('Sign Language Recognition App with MediaPipe')
 
-app_mode = st.sidebar.selectbox('Select Mode', ['About App', 'Run in Real Time', 'Run with Image'])
+app_mode = st.sidebar.selectbox('Select Mode', ['About App', 'Run with Image', 'Run in Real Time'])
 
 if app_mode == 'About App':
     st.markdown('This app performs real-time ASL Alphabet sign language recognition using a pre-trained machine learning model with MediaPipe hand detection.')
@@ -140,10 +140,6 @@ if app_mode == 'About App':
     st.header('Video Demo - Run with Image')
     local_video_path = './ImageDemo.mp4'
     st.video(local_video_path)
-    
-elif app_mode == 'Run in Real Time':
-    st.write('Perform the sign language gesture in front of your webcam...')
-    sign_language_recognition_with_mediapipe()
 
 elif app_mode == 'Run with Image':
     image_file_buffer = st.sidebar.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
@@ -151,4 +147,10 @@ elif app_mode == 'Run with Image':
     if image_file_buffer:
         image = cv2.imdecode(np.frombuffer(image_file_buffer.read(), np.uint8), 1)
         sign_language_recognition_on_image(image)
+
+elif app_mode == 'Run in Real Time':
+    st.write('Perform the sign language gesture in front of your webcam...')
+    sign_language_recognition_with_mediapipe()
+
+
 
