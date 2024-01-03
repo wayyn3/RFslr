@@ -125,7 +125,7 @@ def sign_language_recognition_on_image(image):
 
         st.image(image, caption=f'Predicted Gesture: {prediction[0]}', use_column_width=True)
 
-st.title('Sign Language Recognition App with MediaPipe')
+st.title('Sign Language Recognition using Machine Learning and MediaPipe')
 
 app_mode = st.sidebar.selectbox('Select Mode', ['About App', 'Run with Image', 'Run in Real Time'])
 
