@@ -22,15 +22,18 @@ def load_model():
 
 def sign_language_recognition_with_mediapipe():
     st.write('Perform the sign language gesture in front of your webcam...')
-    img_file_buffer = st.camera_input("Take a picture")
+    cap = st.video_capture()
 
-    if img_file_buffer is not None:
-        bytes_data = img_file_buffer.getvalue()
-        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+    while True:
+        ret, frame = cap.read()
 
-        H, W, _ = cv2_img.shape
+        if not ret:
+            st.error("Failed to grab a frame.")
+            break
 
-        frame_rgb = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+        H, W, _ = frame.shape
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         results = hands.process(frame_rgb)
 
@@ -81,7 +84,6 @@ def sign_language_recognition_with_mediapipe():
                         cv2.LINE_AA)
 
             st.image(frame_rgb, channels='RGB', use_column_width=True)
-
 
 def sign_language_recognition_on_image(image):
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
