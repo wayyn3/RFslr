@@ -133,6 +133,7 @@ elif app_mode == 'Run with Image':
 
 elif app_mode == 'Run in Real Time':
     st.write('Perform the sign language gesture in front of your webcam...')
+    load_model()
     sign_language_recognition_with_mediapipe()
 
 
