@@ -19,37 +19,30 @@ labels_dict = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8
 
 
 def sign_language_recognition_with_mediapipe():
-    cap = cv2.VideoCapture(0)  
-    image_placeholder = st.empty()
+    st.write('Perform the sign language gesture in front of your webcam...')
+    img_file_buffer = st.camera_input("Take a picture")
 
-    expected_num_features = model.n_features_in_
-    
-    while True:
-        data_aux = []
-        x_ = []
-        y_ = []
+    if img_file_buffer is not None:
+        bytes_data = img_file_buffer.getvalue()
+        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
 
-        ret, frame = cap.read()
+        H, W, _ = cv2_img.shape
 
-        flipped_frame = cv2.flip(frame, 1)
-
-        if not ret:
-            print("Error: Failed to grab a frame.")
-            break
-
-        H, W, _ = flipped_frame.shape
-
-        frame_rgb = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
+        frame_rgb = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
 
         results = hands.process(frame_rgb)
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
-                    flipped_frame,  
+                    cv2_img,  
                     hand_landmarks,  
                     mp_hands.HAND_CONNECTIONS,  
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
+
+            data_aux = []
+            x_ = []
+            y_ = []
 
             for hand_landmarks in results.multi_hand_landmarks:
                 for i in range(len(hand_landmarks.landmark)):
@@ -71,6 +64,8 @@ def sign_language_recognition_with_mediapipe():
             x2 = int(max(x_) * W) - 10
             y2 = int(max(y_) * H) - 10
 
+            expected_num_features = model.n_features_in_
+
             if len(data_aux) < expected_num_features:
                 data_aux.extend([0] * (expected_num_features - len(data_aux)))
             elif len(data_aux) > expected_num_features:
@@ -80,13 +75,11 @@ def sign_language_recognition_with_mediapipe():
 
             print("Predicted Value:", prediction[0])
 
-            cv2.rectangle(flipped_frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
-            cv2.putText(flipped_frame, prediction[0], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,
+            cv2.rectangle(cv2_img, (x1, y1), (x2, y2), (0, 0, 0), 4)
+            cv2.putText(cv2_img, prediction[0], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,
                         cv2.LINE_AA)
 
-        image_placeholder.image(flipped_frame, channels='BGR', use_column_width=True)
-
-    cap.release()
+        st.image(cv2_img, channels='BGR', use_column_width=True)
 
 
 def sign_language_recognition_on_image(image):
@@ -125,7 +118,7 @@ def sign_language_recognition_on_image(image):
 
         st.image(image, caption=f'Predicted Gesture: {prediction[0]}', use_column_width=True)
 
-st.title('Sign Language Recognition using Machine Learning and MediaPipe')
+st.title('Sign Language Recognition App with MediaPipe')
 
 app_mode = st.sidebar.selectbox('Select Mode', ['About App', 'Run with Image', 'Run in Real Time'])
 
