@@ -4,8 +4,6 @@ import mediapipe as mp
 import numpy as np
 from tensorflow import keras
 import pickle 
-from streamlit_webrtc import webrtc_streamer
-
 
 model_dict = pickle.load(open('./model.p', 'rb'))
 model = model_dict['model']
@@ -153,5 +151,6 @@ elif app_mode == 'Run with Image':
 elif app_mode == 'Run in Real Time':
     st.write('Perform the sign language gesture in front of your webcam...')
     sign_language_recognition_with_mediapipe()
+
 
 
