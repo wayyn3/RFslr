@@ -22,16 +22,12 @@ def load_model():
 
 def sign_language_recognition_with_mediapipe():
     st.write('Perform the sign language gesture in front of your webcam...')
-    cap = st.video_capture()
+
+    img = st.image([])
+    camera = st.camera()
 
     while True:
-        ret, frame = cap.read()
-
-        if not ret:
-            st.error("Failed to grab a frame.")
-            break
-
-        H, W, _ = frame.shape
+        frame = camera.get_frame()
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -64,12 +60,6 @@ def sign_language_recognition_with_mediapipe():
                     data_aux.append(x - min(x_))
                     data_aux.append(y - min(y_))
 
-            x1 = int(min(x_) * W) - 10
-            y1 = int(min(y_) * H) - 10
-
-            x2 = int(max(x_) * W) - 10
-            y2 = int(max(y_) * H) - 10
-
             expected_num_features = model.n_features_in_
 
             if len(data_aux) < expected_num_features:
@@ -79,11 +69,8 @@ def sign_language_recognition_with_mediapipe():
 
             prediction = load_model().predict([np.asarray(data_aux)])
 
-            cv2.rectangle(frame_rgb, (x1, y1), (x2, y2), (0, 0, 0), 4)
-            cv2.putText(frame_rgb, labels_dict[prediction[0]], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,
-                        cv2.LINE_AA)
-
-            st.image(frame_rgb, channels='RGB', use_column_width=True)
+            img.image(frame_rgb, channels='RGB', use_column_width=True)
+            st.text(f'Predicted Gesture: {labels_dict[prediction[0]]}')
 
 def sign_language_recognition_on_image(image):
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
