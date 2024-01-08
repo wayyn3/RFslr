@@ -1,6 +1,3 @@
-import asyncio
-
-asyncio.set_event_loop(asyncio.new_event_loop())
 import streamlit as st
 import cv2
 import mediapipe as mp
