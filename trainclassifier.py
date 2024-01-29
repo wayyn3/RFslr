@@ -4,16 +4,15 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import numpy as np
 import pickle
 from keras.preprocessing.sequence import pad_sequences
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
+from prettytable import PrettyTable
 
 data_dict = pickle.load(open('./data.pickle', 'rb'))
-
 
 data = pad_sequences(data_dict['data'], dtype=object, padding='post', truncating='post')
 
 labels = np.asarray(data_dict['labels'])
-
 x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, shuffle=True, stratify=labels)
 
 model = RandomForestClassifier()
@@ -21,16 +20,19 @@ model.fit(x_train, y_train)
 
 y_predict = model.predict(x_test)
 
-score = accuracy_score(y_predict, y_test)
-print('{}% of samples were classified correctly!'.format(score * 100))
-
+accuracy = accuracy_score(y_test, y_predict)
 precision = precision_score(y_test, y_predict, average='weighted')
 recall = recall_score(y_test, y_predict, average='weighted')
 f1 = f1_score(y_test, y_predict, average='weighted')
 
-print('Precision:', precision)
-print('Recall:', recall)
-print('F1-Score:', f1)
+table = PrettyTable()
+table.field_names = ['Metric', 'Score']
+table.add_row(['Accuracy', f'{accuracy:.2%}'])
+table.add_row(['Precision', f'{precision:.2%}'])
+table.add_row(['Recall', f'{recall:.2%}'])
+table.add_row(['F1-Score', f'{f1:.2%}'])
+
+print(table)
 
 conf_matrix = confusion_matrix(y_test, y_predict)
 plt.figure(figsize=(10, 8))
